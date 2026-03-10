@@ -1,9 +1,8 @@
 class WebhooksController < ApplicationController
   skip_before_action :verify_authenticity_token
-  skip_before_action :authenticate_user!
 
   def stripe
-    pp ' *** '*100, request.env
+    Rails.logger.info "===***=== WEBHOOK HIT ===***==="
     payload = request.body.read
     sig_header = request.env['HTTP_STRIPE_SIGNATURE']
     endpoint_secret = ENV['STRIPE_WEBHOOK_SECRET']
@@ -19,16 +18,11 @@ class WebhooksController < ApplicationController
     case event.type
     when 'checkout.session.completed'
       session = event.data.object
-      product_id     = session['metadata']['product_id']
-      # Mark the user as having paid and associate the product
-      user = User.find_by(stripe_customer_id: session.customer)
-      if user
-        user.update(paid: true)
-        # Optionally, you can create a record of the purchase here
-      end
+      user = User.find_by(stripe_customer_id: session['customer'])
+      user.update(paid: true) if user
+
       Order.create!(
-        product_id:        product_id,
-        stripe_session_id: session['id'],
+        user:              user,
         status:            'paid'
       )
     end
