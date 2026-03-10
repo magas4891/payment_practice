@@ -41,3 +41,5 @@
 /.idea
 
 .kamal/secrets
+
+/config/environments/development.rb

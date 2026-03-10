@@ -1,0 +1,39 @@
+<% if @products.any? %>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1rem;padding:0.5rem;">
+    <% @products.each do |product| %>
+      <div style="border:1px solid #e6e6e6;padding:1rem;border-radius:10px;display:flex;flex-direction:column;justify-content:space-between;min-height:240px;background:#fff;box-shadow:0 1px 3px rgba(16,24,40,0.03);transition:transform .12s ease,box-shadow .12s ease;">
+        <div style="">
+          <div style="height:150px;background:linear-gradient(180deg,#f8fafc,#f1f5f9);border-radius:8px;display:flex;align-items:center;justify-content:center;color:#9aa3ad;margin-bottom:0.9rem;overflow:hidden;">
+            <!-- Optional actual image: if you add an image_url attribute, replace this with image_tag -->
+            <div style="text-align:center;padding:0 0.5rem;">
+              <svg width="72" height="72" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="opacity:0.7;">
+                <rect x="3" y="3" width="18" height="14" rx="2" stroke="#cbd5e1" stroke-width="1.2"/>
+                <circle cx="8.5" cy="8.5" r="1.5" fill="#cbd5e1"/>
+                <path d="M3 17l4-4 3 3 5-6 6 6" stroke="#cbd5e1" stroke-width="1.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              <div style="font-size:12px;color:#9aa3ad;margin-top:8px;">No image</div>
+            </div>
+          </div>
+
+          <h3 style="margin:0 0 0.35rem 0;font-size:1.05rem;color:#0f172a;"><%= product.title %></h3>
+          <p style="margin:0 0 0.75rem 0;color:#475569;font-size:0.95rem;line-height:1.25;"><%= truncate(product.description.to_s, length: 120) %></p>
+        </div>
+
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-top:0.6rem;">
+          <div style="display:flex;flex-direction:column;">
+            <span style="font-weight:600;color:#0f172a;font-size:1rem;"><%= number_to_currency(product.price) %></span>
+            <% if product.created_at && product.created_at > 30.days.ago %>
+              <small style="color:#9aa3ad;margin-top:2px;">New</small>
+            <% end %>
+          </div>
+
+          <div data-turbo="false">
+            <%= button_to "Buy Now", checkout_path, params: { product_id: product.id }, method: :post, style: "background:#2563eb;color:#fff;border:none;padding:0.55rem 0.9rem;border-radius:8px;text-decoration:none;cursor:pointer;" %>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  </div>
+<% else %>
+  <p style="color:#6b7280;">No products found.</p>
+<% end %>
