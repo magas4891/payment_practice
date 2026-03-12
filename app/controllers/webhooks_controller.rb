@@ -2,7 +2,6 @@ class WebhooksController < ApplicationController
   skip_before_action :verify_authenticity_token
 
   def stripe
-    Rails.logger.info "===***=== WEBHOOK HIT ===***==="
     payload = request.body.read
     sig_header = request.env['HTTP_STRIPE_SIGNATURE']
     endpoint_secret = ENV['STRIPE_WEBHOOK_SECRET']
@@ -18,13 +17,18 @@ class WebhooksController < ApplicationController
     case event.type
     when 'checkout.session.completed'
       session = event.data.object
+
+      return render json: { received: true } unless session['payment_status'] == 'paid'
+
       user = User.find_by(stripe_customer_id: session['customer'])
       user.update(paid: true) if user
 
-      Order.create!(
-        user:              user,
-        status:            'paid'
-      )
+      order = user.orders.find_by(stripe_session_id: session['id'])
+      order.update!(status: 'paid')
+    when 'checkout.session.expired'
+      # user abandoned checkout, clean up pending order if you created one
+    when 'charge.dispute.created'
+      # someone filed a chargeback — flag the order
     end
 
     render json: { received: true }

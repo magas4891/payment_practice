@@ -4,7 +4,8 @@ class CheckoutController < ApplicationController
   def create
     product = Product.find(params[:product_id])
     customer = current_user.stripe_customer
-
+    pending_order = current_user.orders.create!(amount: product.price, currency: 'usd', status: 'pending')
+    pending_order.order_items.create!(product: product, quantity: 1, unit_price: product.price)
     session = Stripe::Checkout::Session.create(
       customer: customer.id,
       mode: 'payment',
@@ -14,8 +15,9 @@ class CheckoutController < ApplicationController
                    }],
       success_url: checkout_success_url + "?session_id={CHECKOUT_SESSION_ID}",
       cancel_url: checkout_cancel_url,
-      metadata: { product_id: product.id }
+      metadata: { product_id: product.id, order_id: pending_order.id }
     )
+    pending_order.update!(stripe_session_id: session.id)
 
     redirect_to session.url, allow_other_host: true
   end
@@ -27,11 +29,6 @@ class CheckoutController < ApplicationController
     if session.payment_status == 'paid'
       product_id = session.metadata.product_id
       product = Product.find(product_id)
-
-      # Mark the user as having paid and associate the product
-      current_user.update(paid: true)
-
-      # Optionally, you can create a record of the purchase here
 
       flash[:notice] = "Payment successful! You have access to #{product.title}."
       redirect_to root_path
