@@ -13,7 +13,6 @@ class CheckoutController < ApplicationController
         quantity: item.quantity
       }
     end
-    pp " >>> "*100, order_items
     session = Stripe::Checkout::Session.create(
       customer: customer.id,
       mode: "payment",

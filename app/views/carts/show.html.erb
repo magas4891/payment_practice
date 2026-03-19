@@ -33,6 +33,7 @@
       <%= button_to "Proceed to Checkout →",
                     checkout_path,
                     method: :post,
+                    data: { turbo: false },
                     class: "w-full mt-6 py-4 bg-amber-400 hover:bg-amber-300 text-neutral-950
                     font-semibold text-sm rounded-xl transition-all duration-150
                     hover:-translate-y-0.5 active:translate-y-0 cursor-pointer" %>
