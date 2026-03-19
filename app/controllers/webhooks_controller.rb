@@ -3,8 +3,8 @@ class WebhooksController < ApplicationController
 
   def stripe
     payload = request.body.read
-    sig_header = request.env['HTTP_STRIPE_SIGNATURE']
-    endpoint_secret = ENV['STRIPE_WEBHOOK_SECRET']
+    sig_header = request.env["HTTP_STRIPE_SIGNATURE"]
+    endpoint_secret = ENV["STRIPE_WEBHOOK_SECRET"]
 
     begin
       event = Stripe::Webhook.construct_event(payload, sig_header, endpoint_secret)
@@ -15,19 +15,19 @@ class WebhooksController < ApplicationController
     end
 
     case event.type
-    when 'checkout.session.completed'
+    when "checkout.session.completed"
       session = event.data.object
 
-      return render json: { received: true } unless session['payment_status'] == 'paid'
+      return render json: { received: true } unless session["payment_status"] == "paid"
 
-      user = User.find_by(stripe_customer_id: session['customer'])
+      user = User.find_by(stripe_customer_id: session["customer"])
       user.update(paid: true) if user
 
-      order = user.orders.find_by(stripe_session_id: session['id'])
-      order.update!(status: 'paid')
-    when 'checkout.session.expired'
+      order = user.orders.find_by(stripe_session_id: session["id"])
+      order.update!(status: "paid")
+    when "checkout.session.expired"
       # user abandoned checkout, clean up pending order if you created one
-    when 'charge.dispute.created'
+    when "charge.dispute.created"
       # someone filed a chargeback — flag the order
     end
 

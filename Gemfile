@@ -59,8 +59,8 @@ end
 group :development do
   # Use console on exceptions pages [https://github.com/rails/web-console]
   gem "web-console"
-  gem 'dotenv-rails'
-  gem 'faker'
+  gem "dotenv-rails"
+  gem "faker"
 end
 
 group :test do
@@ -69,5 +69,5 @@ group :test do
   gem "selenium-webdriver"
 end
 
-gem 'stripe'
-gem 'devise'
+gem "stripe"
+gem "devise"

@@ -4,13 +4,13 @@ Rails.application.routes.draw do
   resources :orders
   resources :payments
   resources :products
-  resource :cart, only: [:show]
-  resources :cart_items, only: [:create, :update, :destroy]
+  resource :cart, only: [ :show ]
+  resources :cart_items, only: [ :create, :update, :destroy ]
 
-  post '/checkout',        to: 'checkout#create'
-  get  '/checkout/success', to: 'checkout#success'
-  get  '/checkout/cancel',  to: 'checkout#cancel'
-  post '/webhooks/stripe',  to: 'webhooks#stripe'
+  post "/checkout",        to: "checkout#create"
+  get  "/checkout/success", to: "checkout#success"
+  get  "/checkout/cancel",  to: "checkout#cancel"
+  post "/webhooks/stripe",  to: "webhooks#stripe"
 
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 

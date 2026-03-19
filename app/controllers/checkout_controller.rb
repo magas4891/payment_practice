@@ -2,20 +2,25 @@ class CheckoutController < ApplicationController
   before_action :authenticate_user!
 
   def create
-    product = Product.find(params[:product_id])
     customer = current_user.stripe_customer
-    pending_order = current_user.orders.create!(amount: product.price, currency: 'usd', status: 'pending')
-    pending_order.order_items.create!(product: product, quantity: 1, unit_price: product.price)
+    pending_order = current_user.orders.create!(amount: current_user.cart.total_price, currency: "usd", status: "pending")
+    order_items = current_user.cart.cart_items.map do |item|
+      product = item.product
+      pending_order.order_items.create!(product: product, quantity: item.quantity, unit_price: product.price)
+
+      {
+        price: item.product.stripe_price_id,
+        quantity: item.quantity
+      }
+    end
+    pp " >>> "*100, order_items
     session = Stripe::Checkout::Session.create(
       customer: customer.id,
-      mode: 'payment',
-      line_items: [{
-                     price: product.stripe_price_id,
-                     quantity: 1
-                   }],
+      mode: "payment",
+      line_items: order_items,
       success_url: checkout_success_url + "?session_id={CHECKOUT_SESSION_ID}",
       cancel_url: checkout_cancel_url,
-      metadata: { product_id: product.id, order_id: pending_order.id }
+      metadata: { order_id: pending_order.id }
     )
     pending_order.update!(stripe_session_id: session.id)
 
@@ -26,11 +31,8 @@ class CheckoutController < ApplicationController
     session_id = params[:session_id]
     session = Stripe::Checkout::Session.retrieve(session_id)
 
-    if session.payment_status == 'paid'
-      product_id = session.metadata.product_id
-      product = Product.find(product_id)
-
-      flash[:notice] = "Payment successful! You have access to #{product.title}."
+    if session.payment_status == "paid"
+      flash[:notice] = "Payment successful!"
       redirect_to root_path
     else
       flash[:alert] = "Payment failed. Please try again."
