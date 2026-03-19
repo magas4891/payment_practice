@@ -1,0 +1,3 @@
+<%= turbo_stream.replace "cart-count" do %>
+  <span id="cart-count"><%= current_user.cart.cart_items.sum(:quantity) %></span>
+<% end %>

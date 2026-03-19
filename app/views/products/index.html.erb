@@ -27,6 +27,11 @@
             <% end %>
           </div>
 
+          <%= button_to "Add to Cart",
+                        cart_items_path,
+                        params: { product_id: product.id },
+                        method: :post,
+                        data: { turbo_stream: true } %>
           <div data-turbo="false">
             <%= button_to "Buy Now", checkout_path, params: { product_id: product.id }, method: :post, style: "background:#2563eb;color:#fff;border:none;padding:0.55rem 0.9rem;border-radius:8px;text-decoration:none;cursor:pointer;" %>
           </div>

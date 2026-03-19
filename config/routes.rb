@@ -4,6 +4,8 @@ Rails.application.routes.draw do
   resources :orders
   resources :payments
   resources :products
+  resource :cart, only: [:show]
+  resources :cart_items, only: [:create, :update, :destroy]
 
   post '/checkout',        to: 'checkout#create'
   get  '/checkout/success', to: 'checkout#success'

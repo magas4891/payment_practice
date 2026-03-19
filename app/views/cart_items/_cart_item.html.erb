@@ -1,0 +1,47 @@
+<div id="<%= dom_id(cart_item) %>"
+     class="grid grid-cols-[64px_1fr_auto_auto] items-center gap-5
+            px-6 py-5 bg-neutral-900 border border-neutral-800
+            rounded-xl hover:bg-neutral-800 hover:border-neutral-700 transition-all duration-200">
+
+  <%# Thumbnail %>
+  <div class="w-16 h-16 bg-neutral-800 rounded-lg flex items-center justify-center text-2xl flex-shrink-0">
+    📦
+  </div>
+
+  <%# Info %>
+  <div>
+    <div class="text-sm font-medium text-stone-200"><%= cart_item.product.title %></div>
+    <div class="text-xs text-neutral-500 mt-1">$<%= cart_item.product.price / 100.0 %> each</div>
+  </div>
+
+  <%# Quantity controls %>
+  <div class="flex items-center bg-neutral-800 border border-neutral-700 rounded-lg overflow-hidden">
+    <%= button_to "−", cart_item_path(cart_item),
+                  method: :patch,
+                  params: { quantity: cart_item.quantity - 1 },
+                  data: { turbo_stream: true },
+                  class: "w-8 h-8 text-neutral-400 hover:text-white hover:bg-neutral-700 transition-colors cursor-pointer bg-transparent border-none" %>
+
+    <span class="w-8 text-center text-sm font-medium border-x border-neutral-700 py-1.5">
+      <%= cart_item.quantity %>
+    </span>
+
+    <%= button_to "+", cart_item_path(cart_item),
+                  method: :patch,
+                  params: { quantity: cart_item.quantity + 1 },
+                  data: { turbo_stream: true },
+                  class: "w-8 h-8 text-neutral-400 hover:text-white hover:bg-neutral-700 transition-colors cursor-pointer bg-transparent border-none" %>
+  </div>
+
+  <%# Price + remove %>
+  <div class="text-right min-w-[80px]">
+    <div class="text-base font-semibold">
+      <%= number_to_currency(cart_item.product.price * cart_item.quantity / 100.0) %>
+    </div>
+    <%= button_to "remove", cart_item_path(cart_item),
+                  method: :delete,
+                  data: { turbo_stream: true },
+                  class: "mt-1.5 text-xs text-neutral-600 hover:text-red-400 underline
+                  underline-offset-2 transition-colors cursor-pointer bg-transparent border-none p-0" %>
+  </div>
+</div>

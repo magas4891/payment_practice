@@ -1,0 +1,16 @@
+<%= turbo_stream.replace "cart-count" do %>
+  <span id="cart-count"><%= current_user.cart.cart_items.sum(:quantity) %></span>
+<% end %>
+
+<%= turbo_stream.update "cart-items" do %>
+  <%= render @cart.cart_items %>
+<% end %>
+
+<%= turbo_stream.update "subtotal-price" do %>
+  <%= number_to_currency(@cart.total_price / 100.0) %>
+<% end %>
+
+<%= turbo_stream.update "total-price" do %>
+  <%= number_to_currency(@cart.total_price / 100.0) %>
+<% end %>
+
