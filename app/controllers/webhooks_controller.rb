@@ -25,6 +25,8 @@ class WebhooksController < ApplicationController
 
       order = user.orders.find_by(stripe_session_id: session["id"])
       order.update!(status: "paid")
+
+      user.cart.destroy!
     when "checkout.session.expired"
       # user abandoned checkout, clean up pending order if you created one
     when "charge.dispute.created"
