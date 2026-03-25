@@ -1,0 +1,38 @@
+<div class="min-h-[calc(100vh-6rem)] bg-neutral-950 text-stone-200 py-12 px-6">
+  <div class="max-w-3xl mx-auto">
+    <header class="mb-6">
+      <h1 class="font-serif text-4xl font-normal text-white tracking-tight">Subscription setup complete</h1>
+      <p class="text-neutral-400 text-sm mt-2">
+        You can visit the premium page to confirm access.
+      </p>
+    </header>
+
+    <% if flash[:notice].present? %>
+      <div class="bg-emerald-400/10 border border-emerald-400/30 text-emerald-200 rounded-2xl p-6 mb-6">
+        <p class="text-sm"><%= flash[:notice] %></p>
+      </div>
+    <% end %>
+
+    <% if @session.present? %>
+      <div class="bg-neutral-900 border border-neutral-800 rounded-2xl p-6 mb-6">
+        <div class="text-sm text-neutral-400">Checkout session:</div>
+        <div class="text-sm text-neutral-200 mt-2 break-all">
+          <%= @session.id %>
+        </div>
+        <div class="text-sm text-neutral-400 mt-4">Payment status:</div>
+        <div class="text-sm text-neutral-200 mt-2">
+          <%= @session.payment_status %>
+        </div>
+      </div>
+    <% end %>
+
+    <div class="bg-neutral-900 border border-neutral-800 rounded-2xl p-6">
+      <%= button_to "Go to premium content", subscriptions_premium_path,
+                    method: :get,
+                    class: "w-full inline-flex items-center justify-center px-5 py-3 bg-amber-400 hover:bg-amber-300 text-neutral-950 rounded-xl text-sm font-semibold transition-colors" %>
+      <p class="text-center text-xs text-neutral-600 mt-4">
+        If access hasn’t appeared yet, it may take a moment for the Stripe webhook to update your account.
+      </p>
+    </div>
+  </div>
+</div>

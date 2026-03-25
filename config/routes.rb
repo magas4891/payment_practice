@@ -12,6 +12,13 @@ Rails.application.routes.draw do
   get  "/checkout/cancel",  to: "checkout#cancel"
   post "/webhooks/stripe",  to: "webhooks#stripe"
 
+  post "/subscriptions", to: "subscriptions#create"
+  get  "/subscriptions/new", to: "subscriptions#new"
+  get  "/subscriptions/success", to: "subscriptions#success"
+  get  "/subscriptions/cancel",  to: "subscriptions#cancel"
+  get  "/subscriptions/portal", to: "subscriptions#portal"
+  get  "/subscriptions/premium", to: "subscriptions#premium"
+
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.

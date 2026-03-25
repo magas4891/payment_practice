@@ -22,6 +22,14 @@ class User < ApplicationRecord
     end
   end
 
+  def active_subscriber?
+    subscription_status == 'active'
+  end
+
+  def active_subscription?
+    current_period_end.present? && current_period_end > Time.current.beginning_of_day
+  end
+
   private
 
   def ensure_cart

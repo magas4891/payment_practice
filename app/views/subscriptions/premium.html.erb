@@ -1,0 +1,78 @@
+<div class="min-h-[calc(100vh-6rem)] bg-neutral-950 text-stone-200 py-12 px-6">
+  <div class="max-w-3xl mx-auto">
+    <header class="mb-8">
+      <h1 class="font-serif text-4xl font-normal text-white tracking-tight">Premium content</h1>
+      <p class="text-neutral-400 text-sm mt-2">
+        This page is meant for testing your Stripe subscription gating.
+      </p>
+    </header>
+
+    <% if subscription_active? %>
+      <div class="bg-emerald-400/10 border border-emerald-400/30 text-emerald-200 rounded-2xl p-6 mb-6">
+        <h2 class="text-xl font-semibold">Access granted</h2>
+        <p class="text-sm text-emerald-100 mt-2">
+          Your subscription is active (Stripe webhook has updated your account).
+        </p>
+      </div>
+
+      <div class="bg-neutral-900 border border-neutral-800 rounded-2xl p-6">
+        <h3 class="text-lg font-semibold">Premium test block</h3>
+        <p class="text-neutral-300 text-sm mt-2">
+          If you’re seeing this, your `User#subscription_active?` logic is working and the webhook is updating
+          <code class="text-neutral-200">subscription_status</code> / <code class="text-neutral-200">current_period_end</code>.
+        </p>
+
+        <div class="mt-5">
+          <div class="text-sm text-neutral-400">
+            Current plan:
+            <span class="text-neutral-200 font-medium"><%= @current_plan&.dig(:title) || current_user.plan %></span>
+          </div>
+          <% if current_user&.current_period_end.present? %>
+            <div class="text-sm text-neutral-400 mt-1">
+              Current period end:
+              <span class="text-neutral-200 font-medium"><%= l(current_user.current_period_end, format: :long) %></span>
+            </div>
+          <% end %>
+        </div>
+
+        <div class="mt-7">
+          <%= button_to "Manage subscription", subscriptions_portal_path,
+                        method: :get,
+                        class: "w-full md:w-auto inline-flex items-center justify-center px-5 py-3 bg-amber-400 hover:bg-amber-300 text-neutral-950 rounded-xl text-sm font-semibold transition-colors" %>
+        </div>
+      </div>
+    <% else %>
+      <div class="bg-rose-400/10 border border-rose-400/30 text-rose-200 rounded-2xl p-6 mb-6">
+        <h2 class="text-xl font-semibold">Access locked</h2>
+        <p class="text-sm text-rose-100 mt-2">
+          You need an active Stripe subscription to view premium content.
+        </p>
+      </div>
+
+      <div class="bg-neutral-900 border border-neutral-800 rounded-2xl p-6">
+        <% if current_user %>
+          <div class="text-sm text-neutral-300">
+            Current subscription status: <span class="text-neutral-200 font-medium"><%= current_user.subscription_status %></span>
+          </div>
+          <% if current_user.current_period_end.present? %>
+            <div class="text-sm text-neutral-300 mt-1">
+              Current period end:
+              <span class="text-neutral-200 font-medium"><%= l(current_user.current_period_end, format: :long) %></span>
+            </div>
+          <% end %>
+        <% else %>
+          <p class="text-neutral-300 text-sm">
+            Sign in to see your subscription status.
+          </p>
+        <% end %>
+
+        <div class="mt-7">
+          <%= button_to "View subscription plans", subscriptions_new_path,
+                        method: :get,
+                        class: "w-full md:w-auto inline-flex items-center justify-center px-5 py-3 bg-amber-400 hover:bg-amber-300 text-neutral-950 rounded-xl text-sm font-semibold transition-colors" %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>
+

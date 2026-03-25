@@ -1,0 +1,82 @@
+<div class="min-h-[calc(100vh-6rem)] bg-neutral-950 text-stone-200 py-12 px-6">
+  <div class="max-w-5xl mx-auto">
+    <header class="mb-10">
+      <div class="flex flex-col gap-3">
+        <h1 class="font-serif text-4xl font-normal text-white tracking-tight">Choose your subscription</h1>
+        <p class="text-neutral-400 text-sm max-w-2xl">
+          Unlock premium content. When you subscribe, Stripe will activate access via webhook updates.
+        </p>
+      </div>
+    </header>
+
+    <div class="grid md:grid-cols-2 gap-6">
+      <% @plans.each do |plan| %>
+        <article class="bg-neutral-900 border border-neutral-800 rounded-2xl p-7 flex flex-col">
+          <div class="flex items-start justify-between gap-4">
+            <div>
+              <h2 class="font-semibold text-white text-xl"><%= plan[:title] %></h2>
+              <p class="text-neutral-400 text-sm mt-2"><%= plan[:description] %></p>
+            </div>
+            <% if current_user&.plan.present? && current_user.plan == plan[:stripe_price_id] %>
+              <span class="text-xs bg-amber-400/10 text-amber-300 border border-amber-400/20 rounded-full px-3 py-1 whitespace-nowrap">
+                Current plan
+              </span>
+            <% end %>
+          </div>
+
+          <div class="mt-6">
+            <div class="text-3xl font-semibold text-amber-400 tracking-tight">
+              <%= number_to_currency(plan[:price]) %>
+            </div>
+            <% if plan[:stripe_price_id].blank? %>
+              <p class="text-xs text-rose-400 mt-2">Configure <code class="text-rose-300">STRIPE_*_PRICE_ID</code> to enable this plan.</p>
+            <% end %>
+          </div>
+
+          <ul class="mt-6 space-y-2 text-sm text-neutral-300">
+            <li>Access premium content</li>
+            <li>Manage billing in Stripe Portal</li>
+          </ul>
+
+          <div class="mt-8 flex-1"></div>
+
+          <div class="mt-6">
+            <% if current_user.active_subscription? && current_user.plan == plan[:stripe_price_id] %>
+              <%= button_to "Unsubscribe",
+                            subscriptions_cancel_path,
+                            method: :get,
+                            class: "w-full py-4 bg-red-600 hover:bg-amber-300 text-neutral-950 font-semibold text-sm rounded-xl transition-all duration-150 hover:-translate-y-0.5 active:translate-y-0 cursor-pointer" %>
+            <% elsif plan[:stripe_price_id].present? %>
+              <%= button_to "Subscribe",
+                            subscriptions_path,
+                            method: :post,
+                            params: { price_id: plan[:stripe_price_id] },
+                            data: { turbo: false },
+                            class: "w-full py-4 bg-amber-400 hover:bg-amber-300 text-neutral-950 font-semibold text-sm rounded-xl transition-all duration-150 hover:-translate-y-0.5 active:translate-y-0 cursor-pointer" %>
+            <% else %>
+              <button class="w-full py-4 bg-neutral-800 text-neutral-500 rounded-xl" disabled>
+                Subscribe (price id missing)
+              </button>
+            <% end %>
+          </div>
+        </article>
+      <% end %>
+    </div>
+
+    <div class="mt-10 bg-neutral-900 border border-neutral-800 rounded-2xl p-6">
+      <div class="flex items-start gap-4">
+        <div class="text-2xl leading-none">🔒</div>
+        <div>
+          <h3 class="font-semibold text-white">Already subscribed?</h3>
+          <p class="text-neutral-400 text-sm mt-1">Update your card or cancel anytime from Stripe.</p>
+          <div class="mt-4">
+            <%= button_to "Open Stripe Billing Portal",
+                          subscriptions_portal_path,
+                          method: :get,
+                          class: "inline-flex items-center justify-center px-5 py-3 bg-neutral-800 hover:bg-neutral-700 text-stone-200 rounded-xl text-sm font-semibold transition-colors" %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
