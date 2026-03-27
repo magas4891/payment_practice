@@ -71,3 +71,5 @@ end
 
 gem "stripe"
 gem "devise"
+gem 'activeadmin'
+gem "dartsass-rails"
