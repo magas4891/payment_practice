@@ -8,18 +8,16 @@ class User < ApplicationRecord
          :recoverable, :rememberable, :validatable
 
   def stripe_customer
-    if stripe_customer_id.present?
-      Stripe::Customer.retrieve(stripe_customer_id)
-    else
-      customer = Stripe::Customer.create(
-        email: email,
-        name: "#{first_name} #{last_name}",
-        metadata: { user_id: id }
-      )
-      update!(stripe_customer_id: customer.id)
+    return Stripe::Customer.retrieve(stripe_customer_id) if stripe_customer_id.present?
 
-      customer
-    end
+    created_customer = Stripe::Customer.create(
+      email: email,
+      name: "#{first_name} #{last_name}",
+      metadata: { user_id: id }
+    )
+    update!(stripe_customer_id: created_customer.id)
+
+    created_customer
   end
 
   def active_subscriber?
